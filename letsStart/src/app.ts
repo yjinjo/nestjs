@@ -1,18 +1,16 @@
 // app.ts
 
-import * as express from "express";
+import * as express from 'express';
+import { Cat, CatType } from './app.model';
 
 const app: express.Express = express();
-const port: number = 8000;
 
-app.get('/', (req, res) => {
-  res.send("Hello, world!");
+app.get('/', (req: express.Request, res: express.Response) => {
+  res.send({ cats: Cat });  // key: value
 })
 
-app.post('/test', (req, res) => {
-  res.send({ person: "David" });
-})
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+// 서버를 열어준다.
+app.listen(8000, () => {
+  console.log('server is on...');
 })
