@@ -3,27 +3,52 @@
 import * as express from 'express';
 import catsRouter from "./cats/cats.route";
 
-const app: express.Express = express();
 
-/** logging middleware */
-app.use((req, res, next) => {
-  console.log(req.rawHeaders[1]);
-  console.log("this is logging middleware");
-  next();
-});
+class Server {
+  public app: express.Application;
 
-/** JSON middleware */
-app.use(express.json());
+  constructor() {
+    const app: express.Application = express();
+    this.app = app;
+  }
 
-app.use(catsRouter);
+  private setRoute() {
+    this.app.use(catsRouter);
+  }
 
-/** 404 middleware */
-app.use((req, res, next) => {
-  console.log("this is error middleware");
-  res.send({ error: "404 not found error" });
-});
+  private setMiddleware() {
+    /** logging middleware */
+    this.app.use((req, res, next) => {
+      console.log(req.rawHeaders[1]);
+      console.log("this is logging middleware");
+      next();
+    });
 
-// 서버를 열어준다.
-app.listen(8000, () => {
-  console.log('server is on...');
-});
+    /** JSON middleware */
+    this.app.use(express.json());
+
+    this.setRoute();
+
+    /** 404 middleware */
+    this.app.use((req, res, next) => {
+      console.log("this is error middleware");
+      res.send({ error: "404 not found error" });
+    });
+  }
+
+  public listen() {
+    // listen에서는 미들웨어를 전부 세팅해줘야한다.
+    this.setMiddleware();
+
+    this.app.listen(8000, () => {
+      console.log('server is on...');
+    });
+  }
+}
+
+function init() {
+  const server = new Server();
+  server.listen();
+}
+
+init();
