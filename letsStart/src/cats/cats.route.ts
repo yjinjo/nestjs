@@ -28,7 +28,6 @@ router.get('/cats', (req, res) => {
 router.get('/cats/:id', (req, res) => {
   try {
     const params = req.params;
-    console.log(params);
     // DB에서 Cat을 가져옴 
     const cat = Cat.find((cat) => {
       return cat.id === params.id;
@@ -66,5 +65,81 @@ router.post('/cats', (req, res) => {
     });
   }
 });
+
+/** UPDATE: 고양이 데이터 전체 업데이트 --> PUT */
+router.put('/cats/:id', (req, res) => {
+  try {
+    const params = req.params;
+    // 업데이트 할 내용이 body에 실려서 오기 때문에, body를 하나 만든다. 
+    const body = req.body;
+    let result;
+
+    // 기존의 DB에서 DB를 순회하면서,
+    Cat.forEach((cat) => {
+      if (cat.id === params.id) {
+        // 만약 id가 동일하다면 새롭게 바뀌는 데이터를 cat에 덮어씌운다. 
+        cat = body;
+        result = cat;
+      }
+    })
+    res.status(200).send({
+      success: true,
+      data: {
+        cat: result
+      }
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message
+    });
+  }
+})
+
+/** UPDATE: 고양이 데이터 부분적으로 업데이트 --> PATCH */
+router.patch('/cats/:id', (req, res) => {
+  try {
+    const params = req.params;
+    const body = req.body;
+    let result;
+
+    Cat.forEach((cat) => {
+      if (cat.id === params.id) {
+        cat = { ...cat, ...body }
+        result = cat;
+      }
+    })
+    res.status(200).send({
+      success: true,
+      data: {
+        cat: result
+      }
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message
+    });
+  }
+})
+
+
+/** DELETE: 고양이 데이터 삭제 --> DELETE */
+router.delete('/cats/:id', (req, res) => {
+  try {
+    const params = req.params;
+    const newCat = Cat.filter((cat) => cat.id !== params.id);
+
+    res.status(200).send({
+      success: true,
+      data: newCat
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message
+    });
+  }
+})
 
 export default router;
