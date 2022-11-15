@@ -5,40 +5,85 @@ import { Cat, CatType } from './app.model';
 
 const app: express.Express = express();
 
-// 미들웨어는 use 메서드를 사용한다.
-// next는 다음 라우터로 이동할 수 있는 함수이다. 
+/** logging middleware */
 app.use((req, res, next) => {
   console.log(req.rawHeaders[1]);
   console.log("this is logging middleware");
-  // 다음 라우터로 실행되게 하려면 next 함수를 호출해야한다. 
   next();
-})
+});
 
-app.get("/cats/som", (req, res, next) => {
-  console.log(req.rawHeaders[1]);
-  console.log("this is som middleware");
-  // 다음 라우터로 실행되게 하려면 next 함수를 호출해야한다. 
-  next();
-})
+/** JSON middleware */
+app.use(express.json());
 
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.send({ cats: Cat });
-})
+/** READ: 전체 고양이 데이터 조회 */
+app.get('/cats', (req, res) => {
+  try {
+    // DB에서 Cat을 가져옴 
+    const cats = Cat;
+    res.status(200).send({
+      success: true,
+      data: {
+        cats,
+      }
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
-app.get("/cats/blue", (req, res) => {
-  res.send({ blue: Cat[0] })
-})
+/** READ: 특정 고양이 데이터 조회 */
+app.get('/cats/:id', (req, res) => {
+  try {
+    const params = req.params;
+    console.log(params);
+    // DB에서 Cat을 가져옴 
+    const cat = Cat.find((cat) => {
+      return cat.id === params.id;
+    })
+    res.status(200).send({
+      success: true,
+      data: {
+        cat,
+      }
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
-app.get("/cats/som", (req, res) => {
-  res.send({ som: Cat[1] })
-})
+/** CREATE: 새로운 고양이 추가 API */
+app.post('/cats', (req, res) => {
+  try {
+    const data = req.body;
+    console.log(data);
+    // DB에 저장
+    Cat.push(data);  // create 
+    res.status(200).send({
+      success: true,
+      // data가 성공적으로 저장이되면 우리가 만든 data를 client에게 보여줌 (선택)
+      data: { data }
+    });
+  } catch (error) {
+    res.status(400).send({
+      success: false,
+      error: error.message
+    });
+  }
+});
 
+/** 404 middleware */
 app.use((req, res, next) => {
   console.log("this is error middleware");
   res.send({ error: "404 not found error" });
-})
+});
 
 // 서버를 열어준다.
 app.listen(8000, () => {
   console.log('server is on...');
-})
+});
