@@ -13,16 +13,18 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CatsController = void 0;
+const success_interceptor_1 = require("./../common/interceptors/success.interceptor");
 const common_1 = require("@nestjs/common");
-const http_exception_filter_1 = require("../http-exception.filter");
+const positiveint_pipe_1 = require("../common/pipes/positiveint.pipe");
+const http_exception_filter_1 = require("../common/exceptions/http-exception.filter");
 const cats_service_1 = require("./cats.service");
 let CatsController = class CatsController {
     constructor(catsService) {
         this.catsService = catsService;
     }
     getAllCat() {
-        throw new common_1.HttpException('api is broken', 401);
-        return 'get all cat api';
+        console.log('hello controller');
+        return { cats: 'get all cat api' };
     }
     getOneCat(param) {
         console.log(param);
@@ -49,7 +51,7 @@ __decorate([
 ], CatsController.prototype, "getAllCat", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe, positiveint_pipe_1.PositiveIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
     __metadata("design:returntype", void 0)
@@ -80,6 +82,7 @@ __decorate([
 ], CatsController.prototype, "deleteCat", null);
 CatsController = __decorate([
     (0, common_1.Controller)('cats'),
+    (0, common_1.UseInterceptors)(success_interceptor_1.SuccessInterceptor),
     (0, common_1.UseFilters)(http_exception_filter_1.HttpExceptionFilter),
     __metadata("design:paramtypes", [cats_service_1.CatsService])
 ], CatsController);
