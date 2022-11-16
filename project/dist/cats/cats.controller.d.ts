@@ -3,7 +3,7 @@ export declare class CatsController {
     private readonly catsService;
     constructor(catsService: CatsService);
     getAllCat(): string;
-    getOneCat(): string;
+    getOneCat(param: number): string;
     createCat(): string;
     updateCat(): string;
     updatePartialCat(): string;
