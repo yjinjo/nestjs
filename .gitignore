@@ -91,4 +91,6 @@ $RECYCLE.BIN/
 
 .vscode
 
+.env
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,visualstudiocode,database
